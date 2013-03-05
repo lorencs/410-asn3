@@ -1,0 +1,21 @@
+I used two external JavaScript files. One contained functions I used to validate my signup page, and the other was linked
+from all the quiz pages and contained functions related to modifying the HTML of those pages.
+
+For the signup form validation I used mostly my code from the labs. To avoid convoluted birthdate validation I simply used
+combo boxes generated using JavaScript.
+
+As suggested, I used JS to show and hide divisions in order to simulate the navigation through questions.
+
+The timers were the trickiest part. At first I saved the current Date to a var, and then subtracted that var from the current 
+Date to get the time elapsed. This didn't work for the "question timer" as it needed to pause if the question wasn't active.
+So I saved the question timer as a Date object with time set to 0 (.setTime(0)). Then, at each interval of the update function, 
+I would add to that date the different between current time, and the date it was last updated. (If I simply added 100ms at each
+interval, it could get innacurate due to cpu delay, and also it didn't update if the browser window was minimized)
+Since the timers are accurate to 100ms (I call the update function every 100ms, otherwise the question timers could be off by 1sec), 
+in the end the question timers might not add up to the main timer. For example if they are 3.4, 3.4, and 3.4, they will all round 
+down to 3, while the main timer will round down from 10.2 to 10.
+
+For the progress bar I used a div whose width was controlled by JavaScript.
+
+If a user attempted to access the quiz pages before registering, I hid the entire quiz and showed instructions to first register
+before trying to access the quizes.
