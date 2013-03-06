@@ -6,14 +6,7 @@ function validateInput(){
 	var postal = document.getElementById("PostalCode").value;
 	var email = document.getElementById("Email").value;
 	
-	var e = document.getElementById("Month");
-	var birthMonth = e.options[e.selectedIndex].text;
-	
-	var e = document.getElementById("Day");
-	var birthDay = e.options[e.selectedIndex].text;
-	
-	var e = document.getElementById("Year");
-	var birthYear = e.options[e.selectedIndex].text;
+	var birthdate = document.getElementById("Birthdate").value;
 	
 	//name validation
 	if (name==null || name==""){
@@ -45,15 +38,19 @@ function validateInput(){
 		return false;
 	}
 
+	var birthRegEx = /^(19|20)\d{2}[\-](0?[1-9]|1[0-2])[\-](0?[1-9]|[12][0-9]|3[01])$/;
+	if (!(birthdate==null || birthdate=="") && birthdate.search(birthRegEx) == -1) {
+		document.getElementById("alert").innerHTML = "Invalid birthday<br><br>";
+		return false;
+	}
+	
 	document.cookie = 	"name=" + name +
 						"; email=" + email +
 						((address == null) ? "" : ("; address=" + address)) + 
 						((city == null) ? "" : ("; city=" + city)) + 
 						((postal == null) ? "" : ("; postal=" + postal)) +
-						((birthMonth == null) ? "" : ("; birthMonth=" + birthMonth)) +
-						((birthDay == null) ? "" : ("; birthDay=" + birthDay)) + 
-						((birthYear == null) ? "" : ("; birthYear=" + birthYear)); 
-	
+						((birthdate == null) ? "" : ("; birthdate=" + birthdate)); 
+						
 	return true;
 }
 
@@ -102,4 +99,9 @@ function clearCookies(){
 	var mydate = new Date();
 	mydate.setTime(mydate.getTime() - 1);
 	document.cookie = "name=; expires=" + mydate.toGMTString();
+}
+
+function logout(){
+	clearCookies();
+	window.location.href = "welcome.php";
 }

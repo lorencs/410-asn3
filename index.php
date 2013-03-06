@@ -12,6 +12,52 @@
 		
 	</HEAD>
 	
+	<?php
+	include 'phpfuncs.php';	
+	
+	//clear all cookies
+	clearCookies();
+	
+	
+	// check if POST method has been used on this page
+	if ($_SERVER["REQUEST_METHOD"] == 'POST'){
+		//open connection
+		$con = openCon();
+		if(!$con) die('Could not connect: ' . mysql_error());
+			
+		//validate registration
+		if (isset($_POST["regSubmit"])) {
+			//echo "reg submit";
+			
+			$result = validateReg();
+			if ($result == "") {
+				//no error, redirect, save cookies
+			} else {
+				$error = $result;
+			}
+		} else if(isset($_POST["loginSubmit"])){
+		//validate login
+			
+			$query =   "SELECT * FROM Person
+						WHERE name = '" . $_POST["login"] . "'";
+						
+			$result = mysql_query($query) or die(" Query failed ");
+						
+			if (mysql_num_rows($result) > 0){ 
+				$row = mysql_fetch_array($result);
+				setCookies($row['name'],$row['access'], $row['address'],$row['city'],$row['postal'],$row['email'],$row['birthdate'], time()+3600);
+				redirect("welcome.php");
+			} else {
+				$loginerror = "Invalid login<br><br>";
+			}
+		}
+
+		//close connection
+		closeCon($con);
+	}
+	
+	?>
+	
 	<BODY onLoad="clearCookies()">
 		<table class="shadow" border="0" cellpadding="2" cellspacing="0" width="800px" align="center">	
 			<tr>
@@ -23,41 +69,47 @@
 					<p><br><h3>Customer Identification</h3></p>
 					
 					<h3>Fields marked with <span style="color:red">*</span> are mandatory</h3>
-					<div id="alert" style="color:red"></div>
-					<table>
-                        <tr><td align="left">Access:</td>       <td><select id="access">
+					<div id="alert" style="color:red"><?= $error?></div>
+					
+					<form method="POST" name="register" action="index.php" onSubmit="return validateInput()">
+					
+					<table>					
+                        <tr><td align="left">Access:</td>       <td><select id="Access" name="Access">
                                                                         <option>Admin</option>
                                                                         <option>User</option>
                                                                     </select>
-						<tr><td align="left">Name:</td>			<td><input type="text" id="Name">		<span style="color:red">*</span></td></tr>
-						<tr><td align="left">Address:</td>		<td><input type="text" id="Address">	</td></tr>
-						<tr><td align="left">City:</td>			<td><input type="text" id="City">		</td></tr>
-						<tr><td align="left">Postal Code:</td>	<td><input type="text" id="PostalCode">	</td></tr>
-						<tr><td align="left">Email:</td>		<td><input type="text" id="Email">		<span style="color:red">*</span></td></tr>
-						<tr><td align="left">Birth Date:</td>	<td><select id="Month" size="1"><script> writeOptions("month"); </script></SELECT>
-																	<select id="Day" size="1"><script> writeOptions("day"); </script></SELECT>
-																	<select id="Year" size="1"><script> writeOptions("year"); </script></SELECT></td></tr>
+						<tr><td align="left">Name:</td>			<td><input type="text" id="Name" name="Name" value="<?= $_POST["Name"]?>">		<span style="color:red">*</span></td></tr>
+						<tr><td align="left">Address:</td>		<td><input type="text" id="Address" name="Address" value="<?= $_POST["Address"]?>">	</td></tr>
+						<tr><td align="left">City:</td>			<td><input type="text" id="City" name="City" value="<?= $_POST["City"]?>">		</td></tr>
+						<tr><td align="left">Postal Code:</td>	<td><input type="text" id="PostalCode" name="PostalCode" value="<?= $_POST["PostalCode"]?>">	</td></tr>
+						<tr><td align="left">Email:</td>		<td><input type="text" id="Email" name="Email" value="<?= $_POST["Email"]?>">	<span style="color:red">*</span></td></tr>
+						<tr><td align="left">Birth Date:</td>	<td><input type="text" id="Birthdate" name="Birthdate" value="<?= $_POST["Birthdate"]?>"> 	<span style="color:grey">(YYYY-MM-DD)</span></td></tr>		 		
+					
 					</table>
 					<br>
-					<button name="bSubmit" onClick="processInput()">Submit</button>
+					<input type="submit" name="regSubmit" value="Submit">
+					</form>
 					
-					<br><br>
+					<br>
 			</tr>
             <tr>
                 <td class="footer">
                     <br>
                     <h3>Or Login</h3>
 
-                    <div id="loginAlert" style="color:red"></div>
+                    <div id="loginAlert" style="color:red"><?= $loginerror?></div>
 
-                    <table>
-                    <tr><td align="left">Name:</td>			<td><input type="text" id="login">		<span style="color:red">*</span></td></tr>
-                    </table>
-
+					<form method="POST" name="login" action="index.php">
+					
+						<table>					
+						<tr><td align="left">Name:</td>			<td><input type="text" name="login"></td></tr>
+						</table>
+							
+						<br>
+						<input type="submit" name="loginSubmit" value="Submit">
+					
+					</form>
                     <br>
-                    <button name="loginSubmit" onClick="processInput()">Submit</button>
-
-                    <br><br>
                 </td>
             </tr>
 		</table>
