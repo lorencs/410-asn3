@@ -40,6 +40,7 @@ function startQuiz(){
 	currentQ = 1;
 	
 	document.getElementById("bStart").className = "hidden";
+	document.getElementById("intro").className = "hidden";
 	document.getElementById("bPrev").className = "default";
 	document.getElementById("bNext").className = "default";
 	document.getElementById("bSubmit").className = "default";
@@ -99,4 +100,12 @@ function submitQuiz(){
 
 	timerDate.setTime(now - mainTimer);
 	document.getElementById("scoreTime").innerHTML = "Total Score: 66%<br>Time Taken: " + myClock(timerDate);
+}
+
+function toggleHint(id){
+	if (document.getElementById("hint" + id).className == "hidden"){
+		document.getElementById("hint" + id).className = "default";
+	} else {
+		document.getElementById("hint" + id).className = "hidden";
+	}
 }

@@ -6,7 +6,7 @@
 			body{font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;}
 		</style>
 		<LINK REL=STYLESHEET HREF="design.css" TYPE="text/CSS">
-		<TITLE>CMPUT410 Assignment 2 - Signup Page</TITLE>
+		<TITLE>CMPUT410 Assignment 3 - Signup Page</TITLE>
 		
 		<script language="JavaScript" src="functions.js" ></script>
 		
