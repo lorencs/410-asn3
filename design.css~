@@ -92,9 +92,7 @@ td.left {
 	-moz-border-top-left-radius: 7px;
 	border-top-left-radius: 7px;
 	
-	border-top: 4pt solid #E68A00;
-	border-left: 4pt solid #E68A00;
-	border-bottom: 4pt solid #E68A00;
+	border: 4pt solid #E68A00;
 }
 
 td.middle {

@@ -37,6 +37,7 @@ function showQuestion(){
 
 //initialize the quiz
 function startQuiz(){
+	alert("TEXT");
 	currentQ = 1;
 	
 	document.getElementById("bStart").className = "hidden";
