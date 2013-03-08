@@ -81,25 +81,18 @@ function increment(q){
 // submit quiz and display results
 function submitQuiz(){
 	clearInterval(myInt);
-	document.getElementById("bPrev").disabled=true;
-	document.getElementById("bNext").disabled=true;
-	document.getElementById("bSubmit").disabled=true;
+
+	document.getElementById("timer1val").value = questionTimers[0].getSeconds();
+	document.getElementById("timer2val").value = questionTimers[1].getSeconds();
+	document.getElementById("timer3val").value = questionTimers[2].getSeconds();
 	
-	for (var i = 1; i < 4; i++){
-		document.getElementById("q" + i).className = "hidden";
-		document.getElementById("a" + i).className = "hidden";
-	}
-	
-	document.getElementById("results").className = "default";
-	document.getElementById("q1result").innerHTML = "Q1: correct, " + myClock(questionTimers[0]);
-	document.getElementById("q2result").innerHTML = "Q2: correct, " + myClock(questionTimers[1]);
-	document.getElementById("q3result").innerHTML = "Q3: incorrect, " + myClock(questionTimers[2]);
-	
-	var now = new Date()
+	var now = new Date();
 	var timerDate = new Date();
 
 	timerDate.setTime(now - mainTimer);
-	document.getElementById("scoreTime").innerHTML = "Total Score: 66%<br>Time Taken: " + myClock(timerDate);
+	document.getElementById("totalTimer").value = timerDate.getSeconds();
+	
+	document.forms['answerForm'].submit();
 }
 
 function toggleHint(id){

@@ -51,7 +51,7 @@
 	
 	foreach($vals as &$val){
 		$val = $val+1;
-		echo $val . "<br>";
+		//echo $val . "<br>";
 	}
 	
 	// read in question data
@@ -88,8 +88,9 @@
 	fclose($file);
 		
 	
-	foreach ($questions as $question){
-		echo $question->stem . "<br>";
+	// save correct answers to cookies
+	for($i = 1; $i < 4; $i++){		
+		setcookie("q" . $i, $questions[$i-1]->correct, time()+3600);
 	}
 	
 	?>
@@ -102,20 +103,14 @@
 	</HEAD>
 	
 	<BODY>
-		<table class="shadow" border="0" cellpadding="2" cellspacing="0" width="800px" align="center">		
-			<tr>
-		<div id="all" class="default">		
+		
+		
+		<table class="shadow" border="0" cellpadding="2" cellspacing="0" width="900px" align="center">		
+		<tr>
 			<td class="left"> 
-				<div id="alert" class="hidden">Please <a href="index.php">register or login</a> taking the quiz.</div>
+				<div id="alert" class="hidden">Please <a href="index.php">register or login</a> before taking the quiz.</div>
 				
-					
-					<div id="results" class="hidden">
-						<h3>Results for <script> document.write(getCookie("name"));</script>:<h3>
-						<div id="q1result" class="correct"></div>
-						<div id="q2result" class="correct"></div>
-						<div id="q3result" class="incorrect"></div>
-						<div id="scoreTime"></div>
-					</div>
+				<div id="all" class="default">		
 					
 					<div class="extra-pad">
 						<div id="intro" style="vertical-align:middle;"><p> Press the button to begin the quiz</p></div>
@@ -127,89 +122,96 @@
 						//div class
 						echo "<div id=\"q" .$i . "\" class=\"hidden\"><div style=\"vertical-align: top;\" >";	
 						
+						//print source
+						echo "\n<div class=\"qlabel\"> " . $questions[$i-1]->source . "<br></div>";
+						
 						//print media
 						foreach($questions[$i-1]->media as $media){
 							if (preg_match('/avi$/', $media)){
-								echo "<embed src=\"" . $media . "\" style=\"max-width:100%;\">";
+								echo "\n<embed src=\"" . $media . "\" style=\"max-width:400px\">";
 							} else {
-								echo "<img src=\"" . $media . "\" style=\"max-width:100%;\">";
+								echo "\n<img src=\"" . $media . "\" style=\"max-width:400px;\">";
 							}
 						}
 						
-						//print question
-						echo "<div class=\"qlabel\"> " . $questions[$i-1]->source . "<br><br>" . " " . $i . ". " . $questions[$i-1]->stem . "</div><br><br><br><br></div>";
+						//print stem
+						echo "\n<div class=\"qlabel\"> "  . $i . ". " . $questions[$i-1]->stem . "</div>\n<br><br><br><br>\n</div>";
 					
 						//print hints
-						echo "<div style=\"vertical-align: bottom;\" >";	
+						echo "\n<div style=\"vertical-align: bottom;\" >";	
 						$hintcount = 1;
 						foreach($questions[$i-1]->hints as $hint){
-							echo "<button onClick=\" toggleHint(" . $hintcount .");\">Hint #" . $hintcount . "</button>";
-							echo "<div id=\"hint" . $hintcount . "\" class=\"hidden\">" . $hint . "</div><br>";
+							echo "\n<button onClick=\" toggleHint(" . $hintcount .");\">Hint #" . $hintcount . "</button>";
+							echo "\n<div id=\"hint" . $hintcount . "\" class=\"hidden\">" . $hint . "\n</div><br>";
 							$hintcount++;
 						}
-						echo "</div>";
+						echo "\n</div>";
 					
-						echo "</div>";
+						echo "\n</div>";
 					}
 					
 					
 					
 					?>
 					
-
-						<!--<div id="q1" class="hidden">
-							<div class="qlabel"> 1. What is sin(2&#960;)? </div>
-						</div>
+					</div>
+				
+				</div>	
+				
+			</td>
+					
+			<td class="middle">
+				<div name="empty"> </div>
+			
+				<form method="POST" id="answerForm"  name="answerForm" action="results.php">
+				<?php 
+					
+					//print each answer
+					for($i = 1;$i < $count+1; $i++){
+						//div class
+						echo "<div id=\"a" . $i . "\" class=\"hidden\">";	
 						
-
-						<div id="q2" class="hidden">
-							<img src="http://www.ricksmath.com/images/rtriangle5.gif" alt="triangle picture">
-							<div class="qlabel"> 2. What is the length of the missing side? </div>										
-						</div>
+						//print list start
+						echo "\n<ul class=\"qlist\">";
 						
+						//print each option
+						$letters = array('a','b','c','d');
+						$a = 0;
+						
+						foreach($questions[$i-1]->options as $option){
+							$b = $a+1;
+							echo "\n<li><label for=\"q" . $i . $letters[$a] . "\"><input type=\"radio\" name=\"q" . $i . "\" id =\"q" . $i . $letters[$a] . 
+								 "\" value=\"" . $b . "\" onClick=\"increment(" . $i . ")\">";
+							if ($questions[$i-1]->anstype == "image"){
+								echo "\n<img src=\"" . $option . "\" style=\"max-width:100px;\">";
+							} else {
+								echo $option;
+							}
+							
+							echo "</label></li>";
+							
 
-						<div id="q3" class="hidden">
-							<div class="qlabel"> 3. What is the derivative of x<sup>2</sup>? </div>											
-						</div>
-					</div>-->
+							$a++;
+						}
 					
-				</td>
+						echo "\n</ul>\n</div>";
+						
+						//print hidden var
+						echo "<input type='hidden' id='timer".$i."val' name='timer".$i."' value='' />";
+					}
 					
-				<td class="middle">
+					//hidden var for total timer
+					echo "<input type='hidden' id='totalTimer' name='totalTimer' value='' />";
 					
-				
-					<div id="a1" class="hidden">
-						<ul class="qlist">
-						<li><label for="q1a"><input type="radio" name="q1" id ="q1a" value="a" onClick="increment(1)">0</label></li>
-						<li><label for="q1b"><input type="radio" name="q1" id ="q1b" value="b" onClick="increment(1)">2&#960;</label></li>
-						<li><label for="q1c"><input type="radio" name="q1" id ="q1c" value="c" onClick="increment(1)">4&#960;</label></li>
-						<li><label for="q1d"><input type="radio" name="q1" id ="q1d" value="d" onClick="increment(1)">6&#960;</label></li>
-						</ul>											
-					</div>
+				?>
+				</form>
 					
-					<div id="a2" class="hidden">
-						<ul class="qlist">
-						<li><label for="q2a"><input type="radio" name="q2" id ="q2a" value="a" onClick="increment(2)">2</label></li>
-						<li><label for="q2b"><input type="radio" name="q2" id ="q2b" value="b" onClick="increment(2)">4</label></li>
-						<li><label for="q2c"><input type="radio" name="q2" id ="q2c" value="c" onClick="increment(2)">&radic;119</label></li>
-						<li><label for="q2d"><input type="radio" name="q2" id ="q2d" value="d" onClick="increment(2)">&radic;167</label></li>
-						</ul>											
-					</div>
-					
-					<div id="a3" class="hidden">
-						<ul class="qlist">
-						<li><label for="q3a"><input type="radio" name="q3" id ="q3a" value="a" onClick="increment(3)">2x</label></li>
-						<li><label for="q3b"><input type="radio" name="q3" id ="q3b" value="b" onClick="increment(3)">x<sup>3/3</sup></label></li>
-						<li><label for="q3c"><input type="radio" name="q3" id ="q3c" value="c" onClick="increment(3)">2x<sup>2</sup></label></li>
-						<li><label for="q3d"><input type="radio" name="q3" id ="q3d" value="d" onClick="increment(3)">2</label></li>
-						</ul>											
-					</div>
-				</td>
-				
-				<!-- RIGHT (nav) section -->
-				<td class="right">
-				
-	
+			</td>
+			
+			<!-- RIGHT (nav) section -->
+			<td class="right">
+			
+				<div id="nav">
 					<br>
 					<button id="bStart" onClick="startQuiz()"> Start Quiz </button> 
 					<button id="bPrev" class="hidden" onClick="prevQ()"> prev </button>
@@ -224,18 +226,21 @@
 					<div id="progressbar">
 						<div id="progressbardiv"></div>
 					</div>
-							
-
-				
-				</td>
+						
+				</div>
 			
-			</tr>		
+			</td>
+			
+		</tr>	
+		
 		</table>
+
 		
 		<script>
 		// if user hasn't reigstered, dont show quiz
 			if (getCookie("name") == null || getCookie("name") == "") {
 				document.getElementById("all").className="hidden";
+				document.getElementById("nav").className="hidden";
 				document.getElementById("alert").className="default";
 			}
 		</script>

@@ -83,6 +83,7 @@ td.footer {
 }
 
 td.left {
+	max-width:450px;
 	background-color: #ffffff;
 	padding-left:1em;
 	padding-right:1em;
@@ -99,10 +100,11 @@ td.left {
 
 td.middle {
 	vertical-align: top;
-	width:100px;
+	width:200px;
 	background-color: #ffffff;
 	padding-left:1em;
 	padding-right:1em;
+	padding-top:4em;
 		
 	border-top: 4pt solid #E68A00;
 	border-bottom: 4pt solid #E68A00;
@@ -115,7 +117,6 @@ td.right {
 	background-color: #E68A00;
 	
 	padding-left:1em;
-	padding-right:1em;
 	
 	-moz-border-bottom-right-radius: 7px;
 	border-bottom-right-radius: 7px;
@@ -126,6 +127,7 @@ td.right {
 }
 
 .question {
+	width:100%;
 	margin-top: 1em;
 	margin-bottom: 1em;
 	background-color: #ffffff;	
@@ -156,7 +158,6 @@ td.right {
 }
 .extra-pad {
 	padding-left:1em;
-	padding-right:1em;
 }
 
 #progressbar {
@@ -172,6 +173,10 @@ td.right {
    height: 13px;
    border-radius: 7px;
    -moz-border-radius: 7px;
+}
+
+.maxwidth {
+	max-width:100%;
 }
 
 .correct {

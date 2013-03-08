@@ -123,4 +123,27 @@ function validateReg(){
 	redirect("welcome.php");
 }
 
+function secsToFormat($secs)
+{
+        $units = array(
+                "hours"   =>      3600,
+                "minutes" =>        60,
+                "seconds" =>         1,
+        );
+
+        foreach ( $units as &$unit ) {
+		$quot  = intval($secs / $unit);
+		$secs -= $quot * $unit;
+		$unit  = $quot;
+        }
+
+		$string = "";
+		
+		if($units['hours'] > 0) $string = $string . $units['hours'] . " hours, ";
+		if($units['minutes'] > 0) $string = $string . $units['minutes'] . " minutes, ";
+		$string = $string . $units['seconds'] . " seconds";
+		
+        return $string;
+}
+
 ?>
