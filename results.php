@@ -42,7 +42,7 @@
 							echo "<div id=\"q".$i."result\" class=\"".$prefix."correct\">Q".$i.": ".$prefix."correct, " . secsToFormat($_POST['timer'.$i]) ."</div>";
 						}
 						
-						$score = floor($sum/3 * 100)/100;
+						$score = floor($sum/3 * 10000) / 100 . "%";
 						echo "<div id='scoreTime'>Total Score: ".$score."<br>Time Taken: ". secsToFormat($_POST['totalTimer']) ."</div>";
 						?>
 						
