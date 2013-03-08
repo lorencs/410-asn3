@@ -111,7 +111,7 @@ td.middle {
 td.right {
 	vertical-align: top;
 	width: 170px;
-	/*display: inline-block;*/	
+	display: inline-block;	
 	background-color: #E68A00;
 	
 	padding-left:1em;
