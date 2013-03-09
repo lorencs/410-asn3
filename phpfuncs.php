@@ -117,7 +117,7 @@ function validateReg(){
 
 	
 	setCookies($name, $access, $address,$city,$postal,$email,$birthdate, time()+3600);
-	$query =   "INSERT INTO `a5039311_assign3`.`Person` VALUES ('" . $name . "', '" . $access . "', '" . $address . "', '" . $city . "', '" . $postal . "', '" . $email . "', '" . $birthdate . "')";
+	$query =   "INSERT INTO `a5039311_assign3`.`Person` VALUES (null, '" . $name . "', '" . $access . "', '" . $address . "', '" . $city . "', '" . $postal . "', '" . $email . "', '" . $birthdate . "')";
 	$result = mysql_query($query) or die(" Query failed ");
 	
 	redirect("welcome.php");

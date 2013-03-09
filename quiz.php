@@ -18,8 +18,10 @@
 	
 			
 			var currentQ = 0;
-			var answeredQ = new Array(false,false,false);
-			//var totalQ;			
+			var answeredQ = new Array(false,false,false);	
+			var totalQ = 3;
+			
+			var hints = new Array(0,0,0);
 		</script>
 		
 	<?php
@@ -90,21 +92,27 @@
 	
 	// save correct answers to cookies
 	for($i = 1; $i < 4; $i++){		
-		setcookie("q" . $i, $questions[$i-1]->correct, time()+3600);
+		setcookie("q" . $i . "correct", $questions[$i-1]->correct, time()+3600);
+		setcookie("q" . $i . "id", $questions[$i-1]->id, time()+3600);
+		setcookie("q" . $i . "stem", $questions[$i-1]->stem, time()+3600);
+		
+		//save skill array as string
+		$skillstr = '';
+		for($j = 0; $j < count($questions[$i-1]->skill); $j++){
+			if($j < (count($questions[$i-1]->skill) - 1)){
+				$skillstr = $skillstr . $questions[$i-1]->skill[$j] . ',';
+			} else {
+				$skillstr = $skillstr . $questions[$i-1]->skill[$j];
+			}
+		}
+		setcookie("q" . $i . "skill", $skillstr, time()+3600);
 	}
 	
 	?>
 	
-	<script language="Javascript">
-		//send number of questions from PHP to javascript
-		var totalQ = '<?= $count ?>';
-	</script>
-	
 	</HEAD>
 	
 	<BODY>
-		
-		
 		<table class="shadow" border="0" cellpadding="2" cellspacing="0" width="900px" align="center">		
 		<tr>
 			<td class="left"> 
@@ -141,8 +149,8 @@
 						echo "\n<div style=\"vertical-align: bottom;\" >";	
 						$hintcount = 1;
 						foreach($questions[$i-1]->hints as $hint){
-							echo "\n<button onClick=\" toggleHint(" . $hintcount .");\">Hint #" . $hintcount . "</button>";
-							echo "\n<div id=\"hint" . $hintcount . "\" class=\"hidden\">" . $hint . "\n</div><br>";
+							echo "\n<button onClick=\" showHint(" . $i . "," . $hintcount .");\">Hint #" . $hintcount . "</button>";
+							echo "\n<div id=\"hint" . $i . $hintcount . "\" class=\"hidden\">" . $hint . "\n</div><br>";
 							$hintcount++;
 						}
 						echo "\n</div>";
@@ -196,8 +204,9 @@
 					
 						echo "\n</ul>\n</div>";
 						
-						//print hidden var
-						echo "<input type='hidden' id='timer".$i."val' name='timer".$i."' value='' />";
+						//print hidden vars
+						echo "<input type='hidden' id='timer".$i."val' name='timer".$i."val' value='' />";		//timer for each q
+						echo "<input type='hidden' id='q".$i."hintcount' name='q".$i."hintcount' value='' />";		//hint count for each q
 					}
 					
 					//hidden var for total timer

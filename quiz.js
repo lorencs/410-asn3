@@ -81,10 +81,13 @@ function increment(q){
 // submit quiz and display results
 function submitQuiz(){
 	clearInterval(myInt);
-
-	document.getElementById("timer1val").value = questionTimers[0].getSeconds();
-	document.getElementById("timer2val").value = questionTimers[1].getSeconds();
-	document.getElementById("timer3val").value = questionTimers[2].getSeconds();
+	
+	//set timer hidden vars
+	for(var i=0; i<3; i++){
+		var id = i+1;
+		document.getElementById("timer" + id + "val").value = questionTimers[i].getSeconds();
+		document.getElementById("q" + id + "hintcount").value = hints[i];
+	}
 	
 	var now = new Date();
 	var timerDate = new Date();
@@ -95,10 +98,9 @@ function submitQuiz(){
 	document.forms['answerForm'].submit();
 }
 
-function toggleHint(id){
-	if (document.getElementById("hint" + id).className == "hidden"){
-		document.getElementById("hint" + id).className = "default";
-	} else {
-		document.getElementById("hint" + id).className = "hidden";
+function showHint(q, hint){
+	if (document.getElementById("hint" + q + hint).className == "hidden"){
+		document.getElementById("hint" + q + hint).className = "default";
+		hints[q-1]++;
 	}
 }

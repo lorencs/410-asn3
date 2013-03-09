@@ -29,17 +29,36 @@
 						
 						$sum = 0;
 						for($i = 1; $i < 4; $i++){
-							$answer = $_POST['q'.$i];
-							$correct = $_COOKIE['q'.$i];
+							//vars to submit to db
+							$username = $_COOKIE['name'];			//name of user that answered question
+							$answer = $_POST['q'.$i];				//user's answer to q $i
+							$correct = $_COOKIE['q'.$i.'correct'];	//correct asnwer to q $i
+							$qid = $_COOKIE['q'.$i.'id'];			//id of q $i
+							$hints = $_POST['q'.$i.'hintcount'];	//hint count of q $i
+							$timer = $_POST['timer'.$i.'val'];		//timer of q $i
+							$stem = $_COOKIE['q'.$i.'stem'];		//stem for q $i
+							$score = 0;								//users score for q $i
+							
+							$skill = $_COOKIE['q'.$i.'skill'];
+							
 							$prefix = "";
 							
 							if ($answer == $correct){
 								$sum++;
+								$score = 1;
 							} else {
 								$prefix = "in";
 							}
 							
-							echo "<div id=\"q".$i."result\" class=\"".$prefix."correct\">Q".$i.": ".$prefix."correct, " . secsToFormat($_POST['timer'.$i]) ."</div>";
+							echo "<div id=\"q".$i."result\" class=\"".$prefix."correct\">Q".$i.": ".$prefix."correct, " . secsToFormat($timer) ."</div>";
+							
+							//submit data to db
+							$con = openCon();
+							
+							$query =   "INSERT INTO `a5039311_assign3`.`Submission` VALUES (null, '" . $username . "', '" . $qid . "', '" . $score . "', '" . $timer . "', '" . $hints . "', '" . $stem . "', '" . $answer . "')";
+							$result = mysql_query($query) or die(" Query failed ");
+							
+							closeCon($con);
 						}
 						
 						$score = floor($sum/3 * 10000) / 100 . "%";
