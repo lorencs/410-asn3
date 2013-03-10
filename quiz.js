@@ -85,7 +85,7 @@ function submitQuiz(){
 	//set timer hidden vars
 	for(var i=0; i<3; i++){
 		var id = i+1;
-		document.getElementById("timer" + id + "val").value = questionTimers[i].getSeconds();
+		document.getElementById("timer" + id + "val").value = questionTimers[i].getTime()/1000;
 		document.getElementById("q" + id + "hintcount").value = hints[i];
 	}
 	
@@ -93,7 +93,7 @@ function submitQuiz(){
 	var timerDate = new Date();
 
 	timerDate.setTime(now - mainTimer);
-	document.getElementById("totalTimer").value = timerDate.getSeconds();
+	document.getElementById("totalTimer").value = timerDate.getTime()/1000;
 	
 	document.forms['answerForm'].submit();
 }

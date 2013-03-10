@@ -441,7 +441,7 @@ function generateAdminPage(){
 		
 						//labels row
 						echo "<tr>\n";
-						foreach($user as $question2){
+						for($user as $question2){
 							echo "<td class='admintd1'>Q".$question2->qid."</td>\n";
 						}
 						echo "</tr>\n";

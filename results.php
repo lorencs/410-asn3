@@ -55,7 +55,7 @@
 							//submit data to db
 							$con = openCon();
 							
-							$query =   "INSERT INTO `a5039311_assign3`.`Submission` VALUES (null, '" . $username . "', '" . $qid . "', '" . $score . "', '" . $timer . "', '" . $hints . "', '" . $stem . "', '" . $answer . "')";
+							$query =   "INSERT INTO `a5039311_assign3`.`Submission` VALUES (null, '" . $username . "', '" . $qid . "', '" . $score . "', '" . $timer . "', '" . $hints . "', '" . $stem . "', '" . $answer . "','" . $skill . "')";
 							$result = mysql_query($query) or die(" Query failed ");
 							
 							closeCon($con);

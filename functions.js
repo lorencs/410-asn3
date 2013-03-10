@@ -105,3 +105,11 @@ function logout(){
 	clearCookies();
 	window.location.href = "welcome.php";
 }
+
+function toggleHiddenGraph(graphname){
+	if (document.getElementById(graphname).className == "hidden"){
+		document.getElementById(graphname).className = "hiddengraph";
+	} else if (document.getElementById(graphname).className == "hiddengraph"){
+		document.getElementById(graphname).className = "hidden";
+	}
+}
