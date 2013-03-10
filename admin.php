@@ -15,18 +15,22 @@
 		
 		
 		<table class="shadow" border="0" cellpadding="2" cellspacing="0" width="900px" align="center">					
-		<tr><td class="header2"><h1><br>Admin Module</h1></td></tr>
-			
-		<tr>
-			<td class="footer"> 
-				<div class="extra-pad">
-					<?php
-					include 'phpfuncs.php';	
-			
-					generateAdminPage();					
-					
-					?>
-		</table>
+			<tr><td class="header2"><h1><br>Admin Module</h1></td></tr>
+				
+			<tr>
+				<td class="footer"> 
+					<div class="extra-pad">
+						<?php
+						include 'phpfuncs.php';	
+				
+						generateAdminPage();					
+						
+						?>
+						
+			<br><br><br><div class="footer">Cmput410 - Assignment 3<br>Mikus Lorence<br>1227388<br>March 11, 2013<br><br>	</div>		
+		</table><br><br>
+		
+		
 		
 	</BODY>
 </HTML>

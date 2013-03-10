@@ -272,8 +272,8 @@ function generateAdminPage(){
 	$j=0;
 	//top row
 	for($i = 0; $i < max(array_keys($skilltypes)) +1; $i++){
-		if ($skilltypes["". $i . ""] == null) continue;
-		$scorearray = $skilltypes["". $i . ""]->score;
+		if ($skilltypes[$i] == null) continue;
+		$scorearray = $skilltypes[$i]->score;
 		$total = 0;
 		$correct = 0;							
 					
@@ -292,13 +292,11 @@ function generateAdminPage(){
 	
 	//bottom row
 	echo "</tr>\n<tr>";
-	$j=0;
 	for($i = 0; $i < max(array_keys($skilltypes)) +1; $i++){
 		if ($skilltypes["". $i . ""] == null) continue;
 		$classstr = '';
 		echo "<td class='admintd1'>";
 		echo $i."</td>\n";
-		$j++;
 	}
 	
 	echo"</tr>\n</table>	<br>\n";
@@ -402,12 +400,19 @@ function generateAdminPage(){
 	//print row for each question
 	foreach($userquestions as $user){
 		ksort($user);
+		
 		foreach($user as $question){
-			//get avg time for the question (needed early)
+		//get avg time for the question (needed early)
 			$timesum = 0;
 			foreach($question->time as $time){
-				$timesum += $time;
+				$timesum += $time;				
 			}
+			$question->time=round($timesum/$question->attempts*100)/100;
+		}
+		
+		
+		foreach($user as $question){
+			
 				
 			$query =   "SELECT id FROM Person WHERE name = '" . $question->user . "'";								
 			$result = mysql_query($query) or die(" Query failed ");	
@@ -427,22 +432,27 @@ function generateAdminPage(){
 						// graph row
 						echo "<tr>\n";
 						$maxtime = 0;
-						foreach($user as $question2){
-							if($question2->time > $maxans) $maxans = $question2->time;
+						for($j = 0; $j < max(array_keys($user)) +1; $j++){
+							if($user[$j] == null) continue;
+							if($user[$j]->time > $maxans) $maxans = $user[$j]->time;
 						}
-						foreach($user as $question2){
-							$percent = round($question2->time/$question2->time * 10000)/100;
+						for($j = 0; $j < max(array_keys($user)) +1; $j++){
+							if($user[$j] == null) continue;
+							//echo "maxans: ". $maxans. "\n";
+							//echo '$user[$j]->time:' . $user[$j]->time . "\n";
+							$percent = round($user[$j]->time/$maxans * 10000)/100;
 							$percentdiff = 100-$percent-15;
 							echo "<td class='admintd1'>";
 							echo "<center><div style='height:100px;width:23px;'> <div style='background-color:white;height:".$percentdiff."%;'></div>\n";
-							echo "<div>".$question2->time."</div><div style='background-color:green;height:".$percent."%;'></div></div><center>\n</td>\n";
+							echo "<div>".$user[$j]->time."</div><div style='background-color:green;height:".$percent."%;'></div></div><center>\n</td>\n";
 						}
 						echo "</tr>\n";	
 		
 						//labels row
 						echo "<tr>\n";
-						foreach($user as $question2){
-							echo "<td class='admintd1'>Q".$question2->qid."</td>\n";
+						for($j = 0; $j < max(array_keys($user)) +1; $j++){
+							if($user[$j] == null) continue;
+							echo "<td class='admintd1'>Q".$user[$j]->qid."</td>\n";
 						}
 						echo "</tr>\n";
 				
@@ -459,8 +469,7 @@ function generateAdminPage(){
 				}
 				$percent=round($correct/$question->attempts*100);
 				echo "<td class='admintd1'>".$percent."%</td>";
-			
-				$question->time=round($timesum/$question->attempts*100)/100;
+
 				echo "<td class='admintd1'>".$question->time." seconds</td>";
 			
 				$hintsum = 0;
@@ -474,7 +483,7 @@ function generateAdminPage(){
 		}
 	}
 	
-	echo "</table>\n";
+	echo "</table><br>\n";
 	
 	closeCon($con);	
 }

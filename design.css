@@ -219,7 +219,6 @@ table.admintable{
 	top:25px;
 	
 	z-index:99;
-	width:200px;
     -moz-box-shadow:0px 0px 20px rgba(0,0,0,0.6);
 	-webkit-box-shadow:0px 0px 20px rgba(0,0,0,0.6);
 	box-shadow:0px 0px 20px rgba(0,0,0,0.6);
@@ -227,5 +226,8 @@ table.admintable{
 	border-radius: 4px;
 	
 	padding: 0.5em;
+}
+p.footer{
+	font-size:medium;
 }
 
