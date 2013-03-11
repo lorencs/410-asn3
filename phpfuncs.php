@@ -285,7 +285,10 @@ function generateAdminPage(){
 	//generate table of graphs for skills ##############################################################################################333
 	$j=0;
 	//top row
-	for($i = 0; $i < max(array_keys($skilltypes)) +1; $i++){
+	$max = 0;
+	if (count(array_keys($skilltypes)) != 0) $max = max(array_keys($skilltypes));
+	
+	for($i = 0; $i < $max +1; $i++){
 		if ($skilltypes[$i] == null) continue;
 		$scorearray = $skilltypes[$i]->score;
 		$total = 0;
@@ -306,7 +309,11 @@ function generateAdminPage(){
 	
 	//bottom row
 	echo "</tr>\n<tr>";
-	for($i = 0; $i < max(array_keys($skilltypes)) +1; $i++){
+	
+	$max = 0;
+	if (count(array_keys($skilltypes)) != 0) $max = max(array_keys($skilltypes));	
+	
+	for($i = 0; $i < $max +1; $i++){
 		if ($skilltypes["". $i . ""] == null) continue;
 		$classstr = '';
 		echo "<td class='admintd1'>";
@@ -343,15 +350,19 @@ function generateAdminPage(){
 					// graph row
 					echo "<tr>\n";
 					$maxans = 0;
-					foreach($question->answers as $answer){
-						if($answer > $maxans) $maxans = $answer;
+					
+					for($i = 0; $i < 4; $i++){
+						if($question->answers[$i] > $maxans) $maxans = $question->answers[$i];
 					}
-					foreach($question->answers as $answer){
-						$percent = round($answer/$maxans * 10000)/100;
+					
+					if($maxans == 0) $maxans = 1;
+					
+					for($i = 0; $i < 4; $i++){
+						$percent = round($question->answers[$i]/$maxans * 10000)/100;
 						$percentdiff = 100-$percent-15;
 						echo "<td class='admintd1'>";
 						echo "<center><div style='height:100px;width:23px;'> <div style='background-color:white;height:".$percentdiff."%;'></div>\n";
-						echo "<div>".$answer."</div><div style='background-color:green;height:".$percent."%;'></div></div><center>\n</td>\n";
+						echo "<div>".$question->answers[$i]."</div><div style='background-color:green;height:".$percent."%;'></div></div><center>\n</td>\n";
 					}
 					echo "</tr>\n";	
 		
@@ -445,12 +456,19 @@ function generateAdminPage(){
 					
 						// graph row
 						echo "<tr>\n";
-						$maxtime = 0;
-						for($j = 0; $j < max(array_keys($user)) +1; $j++){
+						$maxans = 0;
+						
+						$max = 0;
+						if (count(array_keys($user)) != 0) $max = max(array_keys($user));
+						
+						for($j = 0; $j < $max +1; $j++){
 							if($user[$j] == null) continue;
 							if($user[$j]->time > $maxans) $maxans = $user[$j]->time;
 						}
-						for($j = 0; $j < max(array_keys($user)) +1; $j++){
+						
+						if($maxans == 0) $maxans = 1;
+						
+						for($j = 0; $j < $max +1; $j++){
 							if($user[$j] == null) continue;
 							//echo "maxans: ". $maxans. "\n";
 							//echo '$user[$j]->time:' . $user[$j]->time . "\n";
@@ -464,7 +482,7 @@ function generateAdminPage(){
 		
 						//labels row
 						echo "<tr>\n";
-						for($j = 0; $j < max(array_keys($user)) +1; $j++){
+						for($j = 0; $j < $max +1; $j++){
 							if($user[$j] == null) continue;
 							echo "<td class='admintd1'>Q".$user[$j]->qid."</td>\n";
 						}
@@ -498,7 +516,7 @@ function generateAdminPage(){
 	}
 	
 	echo "</table><br>\n";
-	echo "<br><br><br><div class='footer'>Cmput410 - Assignment 3<br>Mikus Lorence<br>1227388<br>March 11, 2013<br><br>	</div>	";
+	echo "<br><br><br><br><br><br><br><br>";
 	closeCon($con);	
 }
 ?>
