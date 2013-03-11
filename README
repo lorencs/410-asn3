@@ -1,21 +1,46 @@
-I used two external JavaScript files. One contained functions I used to validate my signup page, and the other was linked
-from all the quiz pages and contained functions related to modifying the HTML of those pages.
+	I used my two external JavaScript files for the javascript side of things, adding a few new functions to them. An external
+php functions file was used to hold some php functions so that they don't clutter up the html code.
 
-For the signup form validation I used mostly my code from the labs. To avoid convoluted birthdate validation I simply used
-combo boxes generated using JavaScript.
+	On the signup page (index.php), the javascript validation is run using the button's "onClick" (same as last assignment). Then
+if the function doesn't return false, the form is submitted with a post request to index.php. The page is essentially reloaded,
+and php code at the start of the page checks if it was loaded with a POST request, and then checks which button issued it (register 
+or login). On registartion, a function similar to the javascript one is called from the phpfuncs.php file to validate the form. If an
+error occurs, it would return an error string, otherwise it returns a blank string, and the user info is then entered into db, cookies
+are saved, and the user is redirected to the welcome page.
+	If the POST request was issued by the login button, php checks if that username exists, and if it does, it loads the user's info 
+into the cookies and redirects him to the welcome page.
 
-As suggested, I used JS to show and hide divisions in order to simulate the navigation through questions.
+	The welcome page checks if the currently logged in user (grabs username from cookie) has admin priveledges, and if he does, shows
+all 3 buttons, otherwise it only shows the "quiz" and "logout" buttons. Quiz and admin buttons redirect the user to the respective php
+pages. The logout button calls a php function to clear all cookies, and reloads the page. The page uses javascript to check if the user
+is logged in, and if he isn't, hides all content and shows a prompt to login (this is done on all pages).
 
-The timers were the trickiest part. At first I saved the current Date to a var, and then subtracted that var from the current 
-Date to get the time elapsed. This didn't work for the "question timer" as it needed to pause if the question wasn't active.
-So I saved the question timer as a Date object with time set to 0 (.setTime(0)). Then, at each interval of the update function, 
-I would add to that date the different between current time, and the date it was last updated. (If I simply added 100ms at each
-interval, it could get innacurate due to cpu delay, and also it didn't update if the browser window was minimized)
-Since the timers are accurate to 100ms (I call the update function every 100ms, otherwise the question timers could be off by 1sec), 
-in the end the question timers might not add up to the main timer. For example if they are 3.4, 3.4, and 3.4, they will all round 
-down to 3, while the main timer will round down from 10.2 to 10.
+	For the quiz page, I changed the way results were displayed from the last assignment. Most of it is still done in javascript, but since
+results actually have to be submitted and processed, I had to use php and a separate page for that.
+	The questions are read from the JSON file. I generate 3 random numbers between 1 and 15, and when reading each line, store the 
+corresponding question in an array of Question objects. I then cycle through the array and generate the html for the questions. The "options" 
+are all generated inside <form> tags so that they can be submitted. The "submit" button from last assignment is still a javascript button 
+outside the form tags. Upon clicking, it stores info such as the timers in hidden variables in the form. Php also stores info such as the 
+correct asnwer for each question in cookies. The Javascript then users ".submit()" to submit the form with a POST request to "results.php".
 
-For the progress bar I used a div whose width was controlled by JavaScript.
+	The results.php page then processes the user's responses, checks if they are correct, and submits the data to the database. This data is 
+all stored in one "Submissions" table. Each entry has an id that is a primary auto_increment field (since the same user can answer the same 
+question many times, a new id had to be made). It then generates the results page from last assignment, but with php.
 
-If a user attempted to access the quiz pages before registering, I hid the entire quiz and showed instructions to first register
-before trying to access the quizes.
+	The admin module was the most complicated to implement, since large nested tables with hidden graphs had to all be generated with php. The
+function to do so was 350 lines long. It gathers the data by reading in all the entries in the "Submissions" table in the database, and storing 
+the data in arrays of objects. 
+	For the "skills stats", it makes a new "Skilltype" object for every skill that it encounters, and for each skill has an array of scores (1s or 0s). 
+This data is later counted up to determine the percentage answered correcty for each skill.
+	For the "question stats", it makes a new "Question" object for each new object it encounters. Every question object has members such as arrays of
+scores, times, hints, and answers. Each member in the array represents data for one attempt. The "answers" part is an array of arrays, where each 
+of the 4 elements is a count of how many times that option was picked. Other memebrs such as number of attempts, qid, stem, and user that answered
+that question are saved (the user part is relevant only for the "user stats" section, but uses the same question object). This data is later averaged
+for each question that gets printed in the html table.
+	The "user stats" section is similar to the above. It uses an array called "userquestions", which is an array of arrays of questions. Each 
+element in "userquestions" represents a user. Each user has an array of questions that they answered. These questions use the same "Question" object
+as above, but the objects are created separately from the objects made for the "question stats" page, as they average data for each user. Many nested
+foreach loops are then used to average and display the data in pretty tables with hidden graphs. 
+	A javascript function is used to show the "popup" graphs. The "onClick" call is generated with php with the appropriate argument passed to it 
+to show the corresponding graph. 
+

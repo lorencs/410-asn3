@@ -27,7 +27,6 @@
 						
 						?>
 						
-			<br><br><br><div class="footer">Cmput410 - Assignment 3<br>Mikus Lorence<br>1227388<br>March 11, 2013<br><br>	</div>		
 		</table><br><br>
 		
 		

@@ -1,5 +1,6 @@
 <?php
 
+//open connection to db, return connection
 function openCon(){
 	$mysql_host = "mysql16.000webhost.com";
 	$mysql_database = "a5039311_assign3";
@@ -12,10 +13,12 @@ function openCon(){
 	return $con;
 }
 
+//close connection
 function closeCon($con){
 	mysql_close($con);
 }
 
+//redirect to relative url
 function redirect($url, $permanent = false) {
   if($permanent) {
     header('HTTP/1.1 301 Moved Permanently');
@@ -35,6 +38,7 @@ function setCookies($name, $access, $address,$city,$postal,$email,$birthdate, $t
 	setcookie("birthdate", $birthdate, $time);
 }
 
+//clear all cookies
 function clearCookies(){
 	$past = time() - 3600;
 	foreach ( $_COOKIE as $key => $value )
@@ -43,6 +47,7 @@ function clearCookies(){
 	}
 }
 
+//validate registration server side, return error string if error
 function validateReg(){
 	$name = $_POST["Name"];
 	$address = $_POST["Address"];
@@ -65,6 +70,7 @@ function validateReg(){
 		return $error;
 	}
 	
+	//check if name is taken
 	$query =   "SELECT * FROM Person
 				WHERE name = '" . $name . "'";
 						
@@ -99,6 +105,7 @@ function validateReg(){
 		return $error;
 	}
 	
+	//check if email if taken
 	$query =   "SELECT * FROM Person
 				WHERE email = '" . $email . "'";
 						
@@ -109,13 +116,14 @@ function validateReg(){
 		return $error;
 	} 
 	
+	//validate birthday
 	$birthdateRegex = '/^(19|20)\d{2}[\-](0?[1-9]|1[0-2])[\-](0?[1-9]|[12][0-9]|3[01])$/';   //YYYY-MM-DD
 	if (!(is_null($birthdate) || $birthdate=="") && !preg_match($birthdateRegex, $birthdate)){
 		$error = "Invalid birthday<br><br>";
 		return $error;
 	}
 
-	
+	//set the cookies
 	setCookies($name, $access, $address,$city,$postal,$email,$birthdate, time()+3600);
 	$query =   "INSERT INTO `a5039311_assign3`.`Person` VALUES (null, '" . $name . "', '" . $access . "', '" . $address . "', '" . $city . "', '" . $postal . "', '" . $email . "', '" . $birthdate . "')";
 	$result = mysql_query($query) or die(" Query failed ");
@@ -123,6 +131,7 @@ function validateReg(){
 	redirect("welcome.php");
 }
 
+//return time string from seconds
 function secsToFormat($secs)
 {
         $units = array(
@@ -146,6 +155,7 @@ function secsToFormat($secs)
         return $string;
 }
 
+//generate the html for the admin page
 function generateAdminPage(){
 	$name = $_COOKIE['name'];
 	
@@ -155,6 +165,7 @@ function generateAdminPage(){
 		return;
 	}
 	
+	//get user info
 	$con = openCon();						
 	$query =   "SELECT * FROM Person WHERE name = '" . $name . "'";								
 	$result = mysql_query($query) or die(" Query failed ");	
@@ -188,6 +199,7 @@ function generateAdminPage(){
 	}	
 	$skilltypes = array();	//array of skilltypes
 	
+	//class to data on each question attempt
 	class Question {
 		public $attemps;
 		public $score = array();
@@ -198,9 +210,11 @@ function generateAdminPage(){
 		public $qid;
 		public $user;
 	}
+	
+	//question array for question statistics
 	$questions = array();
 	
-	//array to hold arrays of questions
+	//array to hold arrays of questions (for user stats)
 	//each element in this area is a user
 	//each element in the subarray is a question the user answered
 	$userquestions = array();
@@ -484,7 +498,7 @@ function generateAdminPage(){
 	}
 	
 	echo "</table><br>\n";
-	
+	echo "<br><br><br><div class='footer'>Cmput410 - Assignment 3<br>Mikus Lorence<br>1227388<br>March 11, 2013<br><br>	</div>	";
 	closeCon($con);	
 }
 ?>
