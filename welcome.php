@@ -15,24 +15,24 @@
 	<BODY>
 		<table class="shadow" border="0" cellpadding="2" cellspacing="0" width="800px" align="center">	
 			<tr>
-				<td class="header2"> <p><br><h2>
+				<td class="header2"> <h2>
 					<div id="hd2view">Welcome, <?= $_COOKIE["name"] ?></div>
 					<div id="hd2alert" class="hidden">Please Authenticate</div>
-				</h2></p></td>
+				</h2></td>
 			</tr>
 			
 			<tr>
 				<td class="footer"> 
 				<div id="all">
 						<br>
-						<button onClick="window.location.href='quiz.php'">Take Quiz</button><br>
-						<div id="admin"><button onClick="window.location.href='admin.php'">Admin Module</button></div>
+						<button onClick="window.location.href='quiz'">Take Quiz</button><br>
+						<div id="admin"><button onClick="window.location.href='admin'">Admin Module</button></div>
 						<button onClick="logout()">Logout</button>		<br>
 						
 					<br>
 				</div>
 				
-				<div id="alert" class="hidden"><br>Please <a href="index.php">register or login</a> first. <br><br></div>
+				<div id="alert" class="hidden"><br>Please <a href="index">register or login</a> first. <br><br></div>
 			</tr>
 		</table>
 		

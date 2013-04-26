@@ -128,7 +128,7 @@ function validateReg(){
 	$query =   "INSERT INTO `a5039311_assign3`.`Person` VALUES (null, '" . $name . "', '" . $access . "', '" . $address . "', '" . $city . "', '" . $postal . "', '" . $email . "', '" . $birthdate . "')";
 	$result = mysql_query($query) or die(" Query failed ");
 	
-	redirect("welcome.php");
+	redirect("welcome");
 }
 
 //return time string from seconds
@@ -148,11 +148,24 @@ function secsToFormat($secs)
 
 		$string = "";
 		
-		if($units['hours'] > 0) $string = $string . $units['hours'] . " hours, ";
-		if($units['minutes'] > 0) $string = $string . $units['minutes'] . " minutes, ";
-		$string = $string . $units['seconds'] . " seconds";
+		if($units['hours'] > 0) $string = $string . $units['hours'] . " hr, ";
+		if($units['minutes'] > 0) $string = $string . $units['minutes'] . " min, ";
+		$string = $string . $units['seconds'] . " sec";
 		
         return $string;
+}
+
+// returns the avg time taken for a specific question
+function getAvgQuestionTime($qid){
+	$con = openCon();						
+	$query =   "SELECT AVG(time) FROM Submission WHERE qid='" . $qid . "'";								
+	$result = mysql_query($query) or die(" Query failed ");	
+	
+	if($row = mysql_fetch_array($result)){
+		return $row['AVG(time)'];
+	} else {
+		return "";
+	}
 }
 
 //generate the html for the admin page
@@ -161,7 +174,7 @@ function generateAdminPage(){
 	
 	//check that user is logged in
 	if ($name==""){
-		echo "<br>Permission Restricted. Please <a href='index.php'>register or login</a>.<br><br></div></td></tr>";
+		echo "<br>Permission Restricted. Please <a href='index'>register or login</a>.<br><br></div></td></tr>";
 		return;
 	}
 	
@@ -174,7 +187,7 @@ function generateAdminPage(){
 	if (mysql_num_rows($result) > 0){ 
 		$row = mysql_fetch_array($result);
 		if ($row['access'] != 1){
-			echo "<br>You need admin priviledges to access this page. <a href='welcome.php'>Go back</a>.<br><br></div></td></tr>";
+			echo "<br>You need admin priviledges to access this page. <a href='welcome'>Go back</a>.<br><br></div></td></tr>";
 			return;
 		}
 	}
@@ -182,7 +195,7 @@ function generateAdminPage(){
 	//echo menu
 	echo "<br><h2>Menu</h2>";
 	echo "<ul>";
-	echo "<li><a href='welcome.php'>Home</a></li>";
+	echo "<li><a href='welcome'>Home</a></li>";
 	echo "<li><a href='#skills'>Skills</a></li>";
 	echo "<li><a href='#questions'>Questions</a></li>";
 	echo "<li><a href='#users'>Users</a></li>";
@@ -202,6 +215,7 @@ function generateAdminPage(){
 	//class to data on each question attempt
 	class Question {
 		public $attemps;
+		public $skips;
 		public $score = array();
 		public $time = array();
 		public $hints = array();
@@ -224,7 +238,7 @@ function generateAdminPage(){
 		$skillstr = $row['skill'];
 		$skills = split(',', $skillstr);
 		$score = $row['score'];
-					
+
 		//add score to corresponding skill object		
 		foreach($skills as $skill){
 			if($skilltypes["". $skill . ""] == null){
@@ -242,18 +256,24 @@ function generateAdminPage(){
 		$stem = $row['stem'];
 		
 		//create question object if it doesnt exist
-		if($questions["".$qid.""] == null){
+		if(!isset($questions["".$qid.""])){
 			$questions["".$qid.""] = new Question;
 			$questions["".$qid.""]->attempts = 0;
+			$questions["".$qid.""]->skips = 0;
 		}
 		
 		//record data on attempt
 		$questions["".$qid.""]->attempts++;
+		if ($answer == 0){
+			$questions[$qid]->skips++;
+		}
 		array_push($questions["".$qid.""]->score, $score);	
 		array_push($questions["".$qid.""]->time, $time);	
 		array_push($questions["".$qid.""]->hints, $hints);
-		$index = $answer-1;
-		$questions["".$qid.""]->answers["".$index.""]++;	
+		if ($answer != 0){
+			$index = $answer-1;
+			$questions["".$qid.""]->answers["".$index.""]++;	
+		}
 		$questions["".$qid.""]->stem = $stem;
 		$questions["".$qid.""]->qid = $qid;
 		
@@ -262,6 +282,7 @@ function generateAdminPage(){
 		if ($userquestions[$user]["".$qid.""] == null){
 			$userquestions[$user]["".$qid.""] = new Question;
 			$userquestions[$user]["".$qid.""]->attempts = 0;
+			$userquestions[$user]["".$qid.""]->skips = 0;
 		}
 		//record data about question
 		$userquestions[$user]["".$qid.""]->attempts++;
@@ -279,7 +300,8 @@ function generateAdminPage(){
 	ksort($skilltypes);
 	
 	echo "<p>Percentage of Questions Solved Successfully (for each skill)</p>";
-	echo "<table class='admintable' border='0' cellpadding='2' cellspacing='0'>\n";
+	echo "<table id='skillsTable' class='tablesorter' border='0' cellpadding='0' cellspacing='1' style='display:inline-block;width:auto;float:left;margin: 0px 0pt 15px;'>\n";
+	echo "<tbody>";
 	echo "<tr>\n";
 	
 	//generate table of graphs for skills ##############################################################################################333
@@ -301,9 +323,9 @@ function generateAdminPage(){
 		$percent = round($correct/$total * 100);
 		$percentdiff = (100 - $percent - 15);
 		$classstr = '';
-		echo "<td class='admintd1'>";
-		echo "<center><div style='height:150px;width:30px;'> <div style='background-color:white;height:".$percentdiff."%;'></div>";
-		echo "<div>".$percent."%</div><div style='background-color:green;height:".$percent."%'></div></div><center>\n</td>\n";
+		echo "<td>";
+		echo "<center><div style='height:150px;width:20px;padding-left:2px;padding-right:2px;'> <div style='background-color:white;height:".$percentdiff."%;'></div>";
+		echo "<div style='font-size:12'>".$percent."%</div><div class='bar-border' style='background-color:#ff7100;height:".$percent."%'></div></div><center>\n</td>\n";
 		$j++;
 	}
 	
@@ -316,36 +338,47 @@ function generateAdminPage(){
 	for($i = 0; $i < $max +1; $i++){
 		if ($skilltypes["". $i . ""] == null) continue;
 		$classstr = '';
-		echo "<td class='admintd1'>";
+		echo "<td>";
 		echo $i."</td>\n";
 	}
 	
-	echo"</tr>\n</table>	<br>\n";
+	echo"</tr>\n</tbody></table>\n";
+	
+	echo "<div style='display:inline-block;margin-left:15px;'>";
+	$skills = array("Ratios","Geometry","Fractions","English","Programming","Arithmetic","Patterns");
+	for($i = 0; $i < $max; $i++){
+		echo ($i+1). ": ".$skills[$i] ."<br>\n";
+	}
+	echo "</div><br><br><br><br>";
 	
 	
 	//table for question stats ##############################################################################################33
 	echo "<h3><a id='questions'>Question Statistics</a></h3>\n";
-	echo "<table class='admintable' border='0' cellpadding='2' cellspacing='0'>\n";
-	echo "<tr>\n";
-	echo "<th class='admintd1'>Question Id</th>		\n";					
-	echo "<th class='admintd1'>Attempts</th>\n";
-	echo "<th class='admintd1'>Avg Score</th>\n";
-	echo "<th class='admintd1'>Avg Time</th>\n";
-	echo "<th class='admintd1'>Avg Hints</th>\n";
+	echo "<table id='qstatsTable' class='tablesorter' border='0' cellpadding='0' cellspacing='1'>\n";
+	echo "<thead>";
+	echo "<tr>\n";	
+	echo "<th class=\"{sorter: 'digit'}\">Question Id</th>		\n";					
+	echo "<th>Attempts</th>\n";
+	echo "<th>Skip Rate</th>\n";
+	echo "<th>Avg Score</th>\n";
+	echo "<th>Avg Time (time)</th>\n";
+	echo "<th>Avg Hints</th>\n";
 	echo "</tr>\n";		
+	echo "</thead>";
 	
+	echo "<tbody>"; 
 	ksort($questions);
 	
 	//print row for each question
 	foreach($questions as $question){
 		echo "<tr>\n";	
-			echo "<td class='admintd1'>\n";
+			echo "<td>\n";
 			echo "<div style='position: relative'>\n";
-			echo "<div onMouseOver='toggleHiddenGraph(\"a".$question->qid."\");' onMouseOut='toggleHiddenGraph(\"a".$question->qid."\");'>Q:".$question->qid."</div>\n";
+			echo "<a class='various' data-fancybox-type='iframe' href='/question.php?qid=".$question->qid."'><div onMouseOver='toggleHiddenGraph(\"a".$question->qid."\");' onMouseOut='toggleHiddenGraph(\"a".$question->qid."\");'>".$question->qid."</div></a>\n";
 			echo "<div id='a".$question->qid."' class='hidden'>\n";
 			echo $question->stem ."<br><br>\n";
 				//hidden graph table
-				echo "<table class='admintable' border='0' cellpadding='2' cellspacing='0'>\n";
+				echo "<table class='tablesorter' border='0' cellpadding='0' cellspacing='1' style='width:auto;'>\n";
 					
 					// graph row
 					echo "<tr>\n";
@@ -359,66 +392,68 @@ function generateAdminPage(){
 					
 					for($i = 0; $i < 4; $i++){
 						$percent = round($question->answers[$i]/$maxans * 10000)/100;
-						$percentdiff = 100-$percent-15;
-						echo "<td class='admintd1'>";
+						$percent = ($percent == 100) ? 83 : ($percent - 2);
+						$percentdiff = 100-$percent-17;
+						echo "<td>";
 						echo "<center><div style='height:100px;width:23px;'> <div style='background-color:white;height:".$percentdiff."%;'></div>\n";
-						echo "<div>".$question->answers[$i]."</div><div style='background-color:green;height:".$percent."%;'></div></div><center>\n</td>\n";
+						echo "<div>".$question->answers[$i]."</div><div class='bar-border' style='background-color:#ff7100;height:".$percent."%;'></div></div><center>\n</td>\n";
 					}
 					echo "</tr>\n";	
 		
 					//labels row
 					echo "<tr>\n";
 					for($i = 1; $i < 5; $i++){
-						echo "<td class='admintd1'>Opt".$i."</td>\n";
+						echo "<td>Opt".$i."</td>\n";
 					}
 					echo "</tr>\n";	
 				
-				echo "</table><br>\n";
+				echo "</table>\n";
 			echo "</div></div></td>\n";
 			
 			
-			echo "<td class='admintd1'>".$question->attempts."</td>";
+			echo "<td>".$question->attempts."</td>";
+			echo "<td>".(round($question->skips/$question->attempts * 10000)/100)."% (".$question->skips."/".$question->attempts.")</td>";
 			
 			$correct = 0;
 			foreach($question->score as $score){
 				if ($score=='1') $correct++;
 			}
 			$percent=round($correct/$question->attempts*100);
-			echo "<td class='admintd1'>".$percent."%</td>";
+			echo "<td>".$percent."%</td>";
 			
 			$timesum = 0;
 			foreach($question->time as $time){
 				$timesum += $time;
 			}
 			$avgtime=round($timesum/$question->attempts*100)/100;
-			echo "<td class='admintd1'>".$avgtime." seconds</td>";
+			echo "<td>".$avgtime."</td>";
 			
 			$hintsum = 0;
 			foreach($question->hints as $hints){
 				$hintsum += $hints;
 			}
 			$avghints=round($hintsum/$question->attempts*100)/100;
-			echo "<td class='admintd1'>".$avghints."</td>";
+			echo "<td>".$avghints."</td>";
 
 		echo "</tr>\n";	
 	}
-	
+	echo "</tbody>"; 
 	echo "</table>\n";
 	
 	
 	
 	//table for user stats #################################################################################################3
 	echo "<h3><a id='users'>User Statistics</a></h3>\n";
-	echo "<table class='admintable' border='0' cellpadding='2' cellspacing='0'>\n";
+	echo "<table class='tablesorter' border='0' cellpadding='0' cellspacing='1'>\n"; //style='width:auto;'
+	echo "<thead>\n";
 	echo "<tr>\n";
-	echo "<th class='admintd1'>User ID</th>		\n";					
-	echo "<th class='admintd1'>User Name</th>		\n";
-	echo "<th class='admintd1'>Question ID</th>		\n";
-	echo "<th class='admintd1'>Attempts</th>\n";
-	echo "<th class='admintd1'>Avg Score</th>\n";
-	echo "<th class='admintd1'>Avg Time</th>\n";
-	echo "<th class='admintd1'>Avg Hints</th>\n";
-	echo "</tr>\n";		
+	echo "<th>User ID</th>		\n";					
+	echo "<th>Name</th>		\n";
+	echo "<th>Avg Score</th>\n";
+	echo "<th>Avg Time</th>\n";
+	echo "</tr>\n";	
+	echo "</thead>\n";
+	echo "<tbody>\n";
 	
 	ksort($userquestions);
 	
@@ -435,8 +470,11 @@ function generateAdminPage(){
 			$question->time=round($timesum/$question->attempts*100)/100;
 		}
 		
-		
-		foreach($user as $question){
+		//get user info
+		$query =   "SELECT id FROM Person WHERE name = '" . $question->user . "'";								
+		$result = mysql_query($query) or die(" Query failed ");	
+			
+		/*foreach($user as $question){
 			
 				
 			$query =   "SELECT id FROM Person WHERE name = '" . $question->user . "'";								
@@ -446,7 +484,7 @@ function generateAdminPage(){
 			$row = mysql_fetch_array($result);
 			$userid = $row['id'];
 			echo "<tr>\n";	
-				echo "<td class='admintd1'>\n";
+				echo "<td>\n";
 				echo "<div style='position: relative'>\n";
 				echo "<div onMouseOver='toggleHiddenGraph(\"".$question->user.$question->qid."\");' onMouseOut='toggleHiddenGraph(\"".$question->user.$question->qid."\");'>User:".$userid."</div>\n";
 				echo "<div id='".$question->user.$question->qid."' class='hidden'>\n";
@@ -473,10 +511,11 @@ function generateAdminPage(){
 							//echo "maxans: ". $maxans. "\n";
 							//echo '$user[$j]->time:' . $user[$j]->time . "\n";
 							$percent = round($user[$j]->time/$maxans * 10000)/100;
-							$percentdiff = 100-$percent-15;
+							$percent = ($percent == 100) ? 83 : ($percent - 2);
+							$percentdiff = 100-$percent-17;
 							echo "<td class='admintd1'>";
 							echo "<center><div style='height:100px;width:23px;'> <div style='background-color:white;height:".$percentdiff."%;'></div>\n";
-							echo "<div>".$user[$j]->time."</div><div style='background-color:green;height:".$percent."%;'></div></div><center>\n</td>\n";
+							echo "<div>".$user[$j]->time."</div><div class='bar-border' style='background-color:#ff7100;height:".$percent."%;'></div></div><center>\n</td>\n";
 						}
 						echo "</tr>\n";	
 		
@@ -512,11 +551,12 @@ function generateAdminPage(){
 				echo "<td class='admintd1'>".$avghints."</td>";
 
 			echo "</tr>\n";	
-		}
+		}*/
 	}
 	
+	echo "</tbody>\n";
 	echo "</table><br>\n";
-	echo "<br><br><br><br><br><br><br><br>";
+	//echo "<br><br><br><br><br><br><br><br>";
 	closeCon($con);	
 }
 ?>

@@ -113,15 +113,15 @@
 	</HEAD>
 	
 	<BODY>
-		<table class="shadow" border="0" cellpadding="2" cellspacing="0" width="900px" align="center">		
+		<table class="shadow" border="0" cellpadding="2" cellspacing="0" width="800px" align="center">		
 		<tr>
 			<td class="left"> 
-				<div id="alert" class="hidden">Please <a href="index.php">register or login</a> before taking the quiz.</div>
+				<div id="alert" class="hidden">Please <a href="index">register or login</a> before taking the quiz.</div>
 				
 				<div id="all" class="default">		
 					
 					<div class="extra-pad">
-						<div id="intro" style="vertical-align:middle;"><p> Press the button to begin the quiz</p></div>
+						<div id="intro" style="vertical-align:middle;"><p> Quiz instructions and directions go here. Press "start quiz" to begin.</p></div>
 					
 					<?php 
 					
@@ -143,7 +143,7 @@
 						}
 						
 						//print stem
-						echo "\n<div class=\"qlabel\"> "  . $i . ". " . $questions[$i-1]->stem . "</div>\n<br><br><br><br>\n</div>";
+						echo "\n<div class=\"qlabel\"> "  . $i . ". " . $questions[$i-1]->stem . "</div>\n<br>\n</div>";
 					
 						//print hints
 						echo "\n<div style=\"vertical-align: bottom;\" >";	
@@ -171,7 +171,7 @@
 			<td class="middle">
 				<div name="empty"> </div>
 			
-				<form method="POST" id="answerForm"  name="answerForm" action="results.php">
+				<form method="POST" id="answerForm"  name="answerForm" action="results">
 				<?php 
 					
 					//print each answer
@@ -221,8 +221,8 @@
 			<td class="right">
 			
 				<div id="nav">
-					<br>
 					<button id="bStart" onClick="startQuiz()"> Start Quiz </button> 
+					<button id="bBack" onClick="window.location.href='welcome'"> Back </button> 
 					<button id="bPrev" class="hidden" onClick="prevQ()"> prev </button>
 					<button id="bNext" class="hidden" onClick="nextQ()"> next </button>
 					<button id="bSubmit" class="hidden" onClick="submitQuiz()"> submit </button><br><br>
@@ -232,6 +232,7 @@
 					<div id="qPos">Question: 0/3</div>
 					
 					<br>
+					Progress:<br>
 					<div id="progressbar">
 						<div id="progressbardiv"></div>
 					</div>

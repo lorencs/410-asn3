@@ -44,13 +44,14 @@ function validateInput(){
 		return false;
 	}
 	
-	document.cookie = 	"name=" + name +
-						"; email=" + email +
-						((address == null) ? "" : ("; address=" + address)) + 
-						((city == null) ? "" : ("; city=" + city)) + 
-						((postal == null) ? "" : ("; postal=" + postal)) +
-						((birthdate == null) ? "" : ("; birthdate=" + birthdate)); 
-						
+	//set all cookies for 2 hours
+	createCookie("name", name, 1/12);
+	createCookie("email", email, 1/12);
+	createCookie("address", address, 1/12);
+	createCookie("city", city, 1/12);
+	createCookie("postal", postal, 1/12);
+	createCookie("birthdate", birthdate, 1/12);
+		
 	return true;
 }
 
@@ -60,6 +61,17 @@ function processInput() {
 	if (validateInput()){
 		location.href = 'physics.html';
 	}
+}
+
+//creates cookie from name, value, and days
+function createCookie(name, value, days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name + "=" + value + expires + "; path=/";
 }
 
 //returns the value of the key from the cookie

@@ -46,7 +46,7 @@
 			if (mysql_num_rows($result) > 0){ 
 				$row = mysql_fetch_array($result);
 				setCookies($row['name'],$row['access'], $row['address'],$row['city'],$row['postal'],$row['email'],$row['birthdate'], time()+3600);
-				redirect("welcome.php");
+				redirect("welcome");
 			} else {
 				$loginerror = "Invalid login<br><br>";
 			}
@@ -61,17 +61,16 @@
 	<BODY onLoad="clearCookies()">
 		<table class="shadow" border="0" cellpadding="2" cellspacing="0" width="800px" align="center">	
 			<tr>
-				<td class="header2"> <p><br><h2>Sign Up</h2></p></td>
+				<td class="header2"> <h2>Authentication</h2></td>
 			</tr>
 			
 			<tr>
 				<td class="body"> 
-					<p><br><h3>Customer Identification</h3></p>
+					<h3>Register</h3>
 					
-					<h3>Fields marked with <span style="color:red">*</span> are mandatory</h3>
 					<div id="alert" style="color:red"><?= $error?></div>
 					
-					<form method="POST" name="register" action="index.php" onSubmit="return validateInput()">
+					<form method="POST" name="register" action="index" onSubmit="return validateInput()">
 					
 					<table>					
                         <tr><td align="left">Access:</td>       <td><select id="Access" name="Access">
@@ -90,16 +89,14 @@
 					<input type="submit" name="regSubmit" value="Submit">
 					</form>
 					
-					<br>
 			</tr>
             <tr>
                 <td class="footer">
-                    <br>
                     <h3>Or Login</h3>
 
                     <div id="loginAlert" style="color:red"><?= $loginerror?></div>
 
-					<form method="POST" name="login" action="index.php">
+					<form method="POST" name="login" action="index">
 					
 						<table>					
 						<tr><td align="left">Name:</td>			<td><input type="text" name="login"></td></tr>
@@ -109,7 +106,6 @@
 						<input type="submit" name="loginSubmit" value="Submit">
 					
 					</form>
-                    <br>
                 </td>
             </tr>
 		</table>

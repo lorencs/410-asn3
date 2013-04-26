@@ -40,10 +40,14 @@ function startQuiz(){
 	currentQ = 1;
 	
 	document.getElementById("bStart").className = "hidden";
+	document.getElementById("bBack").className = "hidden";
 	document.getElementById("intro").className = "hidden";
 	document.getElementById("bPrev").className = "default";
 	document.getElementById("bNext").className = "default";
 	document.getElementById("bSubmit").className = "default";
+	
+	//disable previous
+	document.getElementById("bPrev").disabled = true;
 	
 	mainTimer = new Date();
 	
@@ -55,11 +59,15 @@ function startQuiz(){
 //previous and next questions
 function prevQ(){
 	if (currentQ > 1) currentQ = currentQ - 1;
+	if (currentQ == 1) document.getElementById("bPrev").disabled = true;
+	if (currentQ < 3) document.getElementById("bNext").disabled = false;
 	showQuestion();
 }
 
 function nextQ(){
 	if (currentQ < 3) currentQ = currentQ + 1;
+	if (currentQ == 3) document.getElementById("bNext").disabled = true;
+	if (currentQ > 1) document.getElementById("bPrev").disabled = false;
 	showQuestion();
 }
 
@@ -71,15 +79,34 @@ function increment(q){
 		if (answeredQ[i]) qSum++;
 	}
 	
-	var color = "red";
-	if (qSum/totalQ > 0.34 && qSum/totalQ < 0.67) color = "yellow";
+	var color = "#b20000";
+	if (qSum/totalQ > 0.34 && qSum/totalQ < 0.67) color = "#D1D119";
 	if (qSum/totalQ > 0.67) color = "green";
 	document.getElementById("progressbardiv").style.width = qSum/totalQ*100 +"%";
 	document.getElementById("progressbardiv").style.backgroundColor  = color;
 }
 
+//return true if there are unanswered questions
+function unanswered(){
+	for (var i=0; i < answeredQ.length; i++){
+		if (!answeredQ[i]) return true;
+	}
+	
+	return false;
+}
+
 // submit quiz and display results
 function submitQuiz(){
+	// ask user to confirm if they have unanswered questions
+	if (unanswered()){
+		if (!confirm('You have unanswered questions, are you sure you want to submit?')) {
+			return;
+		}
+	}
+
+	//set unsubmitted quiz
+	createCookie("doSubmit", 1, 1/12);
+	
 	clearInterval(myInt);
 	
 	//set timer hidden vars
